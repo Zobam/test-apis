@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('base_url')->nullable();
             $table->string('test_user_email');
             $table->string('test_user_password');
+            $table->integer('endpoints_offset')->default(0);
             $table->timestamps();
         });
     }

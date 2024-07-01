@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Endpoint;
+use App\Models\Test_setting;
 use Illuminate\Http\Request;
 
 class EndpointController extends Controller
@@ -13,9 +14,12 @@ class EndpointController extends Controller
      */
     public function index()
     {
+        $endpoints = Endpoint::get();
+
         return [
             'status' => 'success',
-            'data' => Endpoint::get(),
+            'endpoints count' => $endpoints->count(),
+            'data' => $endpoints,
         ];
     }
 
@@ -34,7 +38,7 @@ class EndpointController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:5', 'max:180', 'unique:endpoints,name'],
-            'link' => ['required', 'string', 'min:15', 'max:180', 'unique:endpoints,link']
+            'link' => ['required', 'string', 'min:10', 'max:180', 'unique:endpoints,link']
         ]);
         $endpoint = Endpoint::create($validated);
         return [

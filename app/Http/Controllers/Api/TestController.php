@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Classes\TestClass;
 use App\Http\Controllers\Controller;
 use App\Models\Endpoint;
+use App\Models\Test_setting;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
@@ -13,7 +14,7 @@ class TestController extends Controller
     {
         $responses = [];
 
-        $endpoints = Endpoint::get();
+        $endpoints = $this->get_endpoints();
         if (!$endpoints) {
             return 'No endpoint to test';
         }
@@ -23,7 +24,11 @@ class TestController extends Controller
             foreach ($endpoints as $endpoint) {
                 $responses[] = $test_class->getEndPoint($endpoint);
             }
-            return $responses;
+            return [
+                'status' => 'success',
+                'count' => count($responses),
+                'data' => $responses,
+            ];
         }
         return response()->json(
             [
@@ -32,5 +37,24 @@ class TestController extends Controller
             ],
             403
         );
+    }
+
+    /**
+     * get_endpoints
+     */
+    public function get_endpoints()
+    {
+        $take = 5;
+        $test_settings = Test_setting::first();
+        $endpoints = Endpoint::skip($test_settings->endpoints_offset)->take($take)->get();
+        // update endpoints_offset
+        if (($test_settings->endpoints_offset + $take) <= Endpoint::count()) {
+            $test_settings->endpoints_offset += $take;
+        } else {
+            $test_settings->endpoints_offset = 0;
+        }
+        $test_settings->save();
+
+        return $endpoints;
     }
 }
