@@ -6,22 +6,20 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Endpoint extends Model
+class Test_result extends Model
 {
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'name',
-        'link',
-        'method',
-        'last_check',
+        'status',
+        'status_code',
     ];
 
     /**
-     * get test_results
+     * get endpoint
      */
-    public function test_results()
+    public function endpoint()
     {
-        return $this->hasMany(Test_result::class);
+        return $this->belongsTo(Endpoint::class);
     }
 }
